@@ -2,7 +2,7 @@ services:
   - type: web
     name: ai-chatbot-backend
     env: docker
-    region: oregon  # Adjust to your region
+    region: Singapore (Southeast Asia)
     branch: main
     rootDir: backend
     dockerfilePath: ./Dockerfile
