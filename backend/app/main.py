@@ -5,8 +5,6 @@ import logging
 
 from .api import chat
 from .core.database import create_tables
-from fastapi.middleware.cors import CORSMiddleware
-from .core.config import settings
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,10 +22,6 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan
 )
-
-@app.get("/health")
-async def health_check():
-    return {"status": "ok"}
 
 app.add_middleware(
     CORSMiddleware,
@@ -52,11 +46,3 @@ if __name__ == "__main__":
         reload=True,
         log_level="info"
     )
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.cors_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
