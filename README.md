@@ -1,4 +1,4 @@
-# AI Chatbot Assistant
+# AI Chatbot
 
 A full-stack AI-powered chatbot built with React, FastAPI, and LangChain.
 
