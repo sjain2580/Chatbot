@@ -1,25 +1,22 @@
 import os
-from typing import List
+from pydantic_settings import BaseSettings
+from typing import Optional
 
-class Settings:
-    app_name: str = "AI Chatbot API"
+class Settings(BaseSettings):
+    app_name: str = "Scalable Chatbot API"
+    app_version: str = "1.0.0"
     debug: bool = os.getenv("DEBUG", "False").lower() == "true"
     
-    # CORS origins
-    cors_origins: List[str] = [
+    database_url: str = os.getenv("DATABASE_URL", "sqlite:///./chatbot.db")
+    openai_api_key: Optional[str] = os.getenv("OPENAI_API_KEY")
+    
+    backend_cors_origins: list = [
         "http://localhost:3000",
-        "https://*.vercel.app",  # Your Vercel domain
-        "*"  # Remove this in production for security
+        "http://127.0.0.1:3000",
+        "*"  # Allow all for now, restrict in production
     ]
     
-    # Database
-    database_url: str = os.getenv("DATABASE_URL", "sqlite:///./chatbot.db")
-    
-    # AI Settings
-    ai_provider: str = os.getenv("AI_PROVIDER", "ollama")
-    ai_model: str = os.getenv("AI_MODEL", "llama2")
-    
-    # Server
-    port: int = int(os.getenv("PORT", "8000"))
+    class Config:
+        case_sensitive = True
 
 settings = Settings()
