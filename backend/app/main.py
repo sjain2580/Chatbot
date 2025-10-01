@@ -5,6 +5,10 @@ import logging
 
 from .api import chat
 from .core.database import create_tables
+import os
+
+# Get port from environment variable (Render provides this)
+PORT = int(os.getenv("PORT", 8000))
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -40,20 +44,8 @@ async def root():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
-        "__main__:app",
+        "app.main:app",
         host="0.0.0.0",
-        port=8000,
-        reload=True,
+        port=PORT,
         log_level="info"
     )
-
-from fastapi.middleware.cors import CORSMiddleware
-from .core.config import settings
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.cors_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
