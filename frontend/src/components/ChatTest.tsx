@@ -50,12 +50,14 @@ const ChatTest: React.FC = () => {
   }, []);
 
   const checkHealth = async () => {
-    try {
-      const res = await axios.get(`${API_BASE_URL}/health`);
-      setIsHealthy(res.data.status === 'healthy');
-    } catch {
-      setIsHealthy(false);
-    }
+  try {
+    const res = await axios.get(`${API_BASE_URL}/health`);
+    setIsHealthy(res.data.status === 'healthy');
+    console.log('Health check response:', res.data);
+  } catch (error) {
+    console.error('Health check failed:', error);
+    setIsHealthy(false);
+  }
   };
 
   const sendMessage = async () => {

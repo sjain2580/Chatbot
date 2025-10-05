@@ -7,6 +7,18 @@ import os
 from .api import chat
 from .core.database import create_tables
 
+from dotenv import load_dotenv
+import os
+
+# Load environment variables
+load_dotenv()
+
+# Verify key is loaded
+if os.getenv("OPENAI_API_KEY"):
+    print("OpenAI API key loaded successfully")
+else:
+    print("WARNING: OpenAI API key not found!")
+    
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 

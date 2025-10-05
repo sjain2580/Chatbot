@@ -8,7 +8,7 @@ from ..services.ai_service import AIService
 from ..core.database import get_db
 
 router = APIRouter()
-ai_service = AIService(model="llama2")
+ai_service = AIService()
 
 class ChatMessage(BaseModel):
     content: str
