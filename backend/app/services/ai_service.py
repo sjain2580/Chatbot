@@ -4,12 +4,19 @@ from typing import Dict, Any
 import httpx
 import os
 import logging
+from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
+load_dotenv()
 
 class AIService:
     def __init__(self):
-        self.api_key = os.getenv("HUGGINGFACE_API_KEY", "")
+        self.api_key = os.getenv("HUGGINGFACE_API_KEY")
+        if not self.api_key:
+            # Raise an error if the secret is missing.
+            raise EnvironmentError(
+                "HUGGINGFACE_API_KEY environment variable is not set. "
+                "Please set it before running the application.")
         # Try multiple models as fallback
         self.models = [
             "microsoft/DialoGPT-medium",
