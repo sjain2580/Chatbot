@@ -2,7 +2,7 @@
 
 A full-stack AI-powered chatbot built with React, FastAPI, and LangChain.
 
-🔗 **Live Demo:** <https://chatbot-frontend.onrender.com>
+🔗 **Live Demo:** <https://hilarious-tartufo-fc598d.netlify.app/>
 
 ## Features
 
