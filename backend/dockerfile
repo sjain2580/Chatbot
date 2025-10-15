@@ -3,20 +3,20 @@ FROM python:3.11-slim
 # Set working directory inside the container
 WORKDIR /app
 
-# 1. Install System Dependencies (Spaces added for correct parsing)
+# 1. Install System Dependencies (curl and build-essential)
 RUN apt-get update && apt-get install -y \
 curl \
 build-essential\
 && rm -rf /var/lib/apt/lists/*
 
-# 2. Install Ollama binary (CRITICAL: Using direct link now)
+# 2. Install Ollama binary
 RUN curl -L https://www.google.com/search?q=https://ollama.com/download/ollama-linux-amd64 -o /usr/bin/ollama \
 && chmod +x /usr/bin/ollama
 
 # 3. Pull Model During Build (Model weights baked into the image)
 RUN ollama pull llama2
 
-# 4. Copy requirements and install
+# 4. Copy requirements and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -28,4 +28,4 @@ ENV PORT 8000
 EXPOSE 8000
 
 # 6. Startup Command
-# CMD sh -c "ollama serve & python -m uvicorn main:app --host 0.0.0.0 --port ${PORT} --workers 1"
+CMD sh -c "ollama serve & python -m uvicorn main:app --host 0.0.0.0 --port ${PORT} --workers 1"
