@@ -3,25 +3,29 @@ FROM python:3.11-slim
 # Set working directory inside the container
 WORKDIR /app
 
-# 1. Install System Dependencies
-RUN apt-get update && apt-get install -y \
-    curl \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+# Install System Dependencies
+RUN apt-get update && apt-get install -y\
+curl\
+build-essential\
+&& rm -rf /var/lib/apt/lists/*
 
-# 2. Install Ollama binary
-RUN curl -L https://www.google.com/search?q=https://ollama.com/download/ollama-linux-amd64 -o /usr/bin/ollama && chmod +x /usr/bin/ollama
+# Install Ollama binary
+RUN curl -L https://www.google.com/url?sa=E&source=gmail&q=https://ollama.com/download/ollama-linux-amd64 -o /usr/bin/ollama\
+&& chmod +x /usr/bin/ollama
 
-# 3. Pull Model During Build
+# Pull Model During Build
 RUN ollama pull llama2
 
-# 4. Copy requirements and install
+# Copy requirements and install
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 5. Copy application code
+# Copy application code (main.py, app/, etc.)
 COPY . .
 
-# 6. Set default port
+# Set default port
 ENV PORT 8000
 EXPOSE 8000
+
+# Startup Command
+CMD sh -c "ollama serve & python -m uvicorn main:app --host 0.0.0.0 --port ${PORT} --workers 1"
