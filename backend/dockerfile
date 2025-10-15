@@ -1,18 +1,27 @@
 FROM python:3.11-slim
 
-# The working directory is now /backend inside the container.
+# Set working directory inside the container
 WORKDIR /app
 
-# ... (Install dependencies and Ollama) ...
-# Copy requirements and install
+# 1. Install System Dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# 2. Install Ollama binary
+RUN curl -L https://www.google.com/search?q=https://ollama.com/download/ollama-linux-amd64 -o /usr/bin/ollama && chmod +x /usr/bin/ollama
+
+# 3. Pull Model During Build
+RUN ollama pull llama2
+
+# 4. Copy requirements and install
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-# This copies everything from /backend (including main.py, app/, ai_service.py)
-# into the Docker WORKDIR /app.
+# 5. Copy application code
 COPY . .
 
-# Startup script
-# This command needs to know where main.py is located.
-CMD sh -c "ollama serve & python -m uvicorn main:app --host 0.0.0.0 --port ${PORT} --workers 1"
+# 6. Set default port
+ENV PORT 8000
+EXPOSE 8000
