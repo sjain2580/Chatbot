@@ -8,7 +8,6 @@ from .api import chat
 from .core.database import create_tables
 
 from dotenv import load_dotenv
-import os
 
 # Load environment variables
 load_dotenv()
@@ -38,7 +37,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://my-ai-chatbot34.netlify.app/"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
