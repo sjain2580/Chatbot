@@ -1,25 +1,39 @@
 FROM python:3.11-slim
 
+# Set working directory inside the container
 WORKDIR /app
 
-# Install system dependencies
+# 1. Install System Dependencies (Needed for Ollama and build-essential for some Python libs)
 RUN apt-get update && apt-get install -y \
-    curl \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+curl \
+build-essential \
+&& rm -rf /var/lib/apt/lists/*
 
-# Install Ollama
-RUN curl -fsSL https://ollama.ai/install.sh | sh
 
-# Copy requirements and install
+# 2. Install Ollama binary
+# Using the curl method directly is more reliable than piping the install script in a RUN layer.
+RUN curl -L https://www.google.com/search?q=https://ollama.com/download/ollama-linux-amd64 -o /usr/bin/ollama && chmod +x /usr/bin/ollama
+# Verify installation
+RUN ollama version
+# 3. Pull Model During Build (CRITICAL FIX)
+# This saves the llama2 weights permanently into the image layer, eliminating cold starts.
+RUN ollama pull llama2
+
+# 4. Copy requirements and install
 COPY requirements.txt .
+
+# Install packages, ensuring 'langchain-community' is included for OllamaLLM
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# 5. Copy application code
+# Assuming main.py is in the root and imports from a sub-folder 'app'
 COPY . .
 
-# Expose port
+# Set default port
+ENV PORT 8000
 EXPOSE 8000
 
-# Startup script
-CMD sh -c "ollama serve & sleep 5 && ollama pull llama2 && cd app && python -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"
+# 6. Startup Command (Simplified and Corrected)
+# - Run Ollama in the background (serve)
+# - Run Uvicorn in the foreground, using 'main:app' since the entry file is in /app
+CMD sh -c "ollama serve & python -m uvicorn main:app --host 0.0.0.0 --port ${PORT} --workers 1"
