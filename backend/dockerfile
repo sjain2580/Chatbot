@@ -1,39 +1,18 @@
 FROM python:3.11-slim
 
-# Set working directory inside the container
+# The working directory is now /backend inside the container.
 WORKDIR /app
 
-# 1. Install System Dependencies (Needed for Ollama and build-essential for some Python libs)
-RUN apt-get update && apt-get install -y \
-curl \
-build-essential \
-&& rm -rf /var/lib/apt/lists/*
-
-
-# 2. Install Ollama binary
-# Using the curl method directly is more reliable than piping the install script in a RUN layer.
-RUN curl -L https://www.google.com/search?q=https://ollama.com/download/ollama-linux-amd64 -o /usr/bin/ollama && chmod +x /usr/bin/ollama
-# Verify installation
-RUN ollama version
-# 3. Pull Model During Build (CRITICAL FIX)
-# This saves the llama2 weights permanently into the image layer, eliminating cold starts.
-RUN ollama pull llama2
-
-# 4. Copy requirements and install
+# ... (Install dependencies and Ollama) ...
+# Copy requirements and install
 COPY requirements.txt .
-
-# Install packages, ensuring 'langchain-community' is included for OllamaLLM
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 5. Copy application code
-# Assuming main.py is in the root and imports from a sub-folder 'app'
+# Copy application code
+# This copies everything from /backend (including main.py, app/, ai_service.py)
+# into the Docker WORKDIR /app.
 COPY . .
 
-# Set default port
-ENV PORT 8000
-EXPOSE 8000
-
-# 6. Startup Command (Simplified and Corrected)
-# - Run Ollama in the background (serve)
-# - Run Uvicorn in the foreground, using 'main:app' since the entry file is in /app
+# Startup script
+# This command needs to know where main.py is located.
 CMD sh -c "ollama serve & python -m uvicorn main:app --host 0.0.0.0 --port ${PORT} --workers 1"
